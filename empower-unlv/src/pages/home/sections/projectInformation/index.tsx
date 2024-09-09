@@ -1,5 +1,3 @@
-import React from "react";
-
 export default function ProjectInformation() {
   return (
     <div className="flex flex-col gap-y-4">
