@@ -1,5 +1,3 @@
-import React from "react";
-
 export default function BackgroundImage() {
   return (
     <div className="w-full h-[100vh] overflow-hidden fixed z-[-1]">

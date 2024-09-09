@@ -19,8 +19,8 @@ export default function NavBar() {
   ];
 
   const handleClick = (item: any) => {
-    console.log(window.location.href, item.href);
-    if (window.location.href === "/" + item.href) {
+    // scroll to top of window if we click on the tab of the current window, else navigate to it
+    if (window.location.pathname === "/" + item.href) {
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
       navigate("/" + item.href);
