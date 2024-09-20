@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --radius: 0.5rem;
+  }
+
+  p {
+    @apply leading-7
+  }
+
+  a {
+    @apply text-sky-700 hover:underline
+  }
+
+  h1 {
+    @apply scroll-m-20 text-4xl font-bold tracking-tight lg:text-5xl;
+    font-family: 'Raleway', sans-serif;
+  }
+
+  h2 {
+    @apply scroll-m-20 text-3xl font-medium tracking-tight first:mt-0;
+    font-family: 'Raleway', sans-serif;
+  }
+}
