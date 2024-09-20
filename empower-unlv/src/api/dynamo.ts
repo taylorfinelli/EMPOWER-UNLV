@@ -29,3 +29,20 @@ export const writeData = async (item: any) => {
     throw error;
   }
 };
+
+/*
+for reading a specific item
+  const params = {
+    TableName: tableName,
+    Key: { id: item.id, graphId: item.graphId },
+  };
+  try {
+    const response = await dynamoDB.get(params).promise();
+    console.log("Data written successfully: ", item);
+  } catch (error) {
+    console.error("Error writing data: ", error);
+    throw error;
+  }
+*/
+
+// https://dynobase.dev/dynamodb-batch-write-update-delete/

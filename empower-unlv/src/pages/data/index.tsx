@@ -6,6 +6,9 @@ export default function Data() {
   const [field2, setfield2] = useState("");
   const [field3, setfield3] = useState("");
   let item: any = { id: field1, graphId: field2, other: field3 };
+  let count = 0;
+  const itemArray = Array.from({ length: 10 }, () => ({ ...item, id: count++ }));
+
   return (
     <div>
       <input
@@ -26,7 +29,7 @@ export default function Data() {
         value={field3}
         onChange={(e) => setfield3(e.target.value)}
       ></input>
-      <button onClick={() => writeData(item)}>Write</button>
+      <button onClick={() => writeData(itemArray)}>Write</button>
     </div>
   );
 }
