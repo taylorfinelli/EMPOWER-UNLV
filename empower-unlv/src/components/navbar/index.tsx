@@ -28,7 +28,7 @@ export default function NavBar() {
   };
 
   return (
-    <div className="flex flex-row w-full h-16 bg-sky-950 items-center justify-between pr-6 fixed z-50">
+    <div className="flex flex-row w-full h-16 bg-blue_primary items-center justify-between pr-6 fixed z-50">
       <Logos />
       <div className="flex flex-row gap-x-4">
         {menuItems.map((item, id) => (

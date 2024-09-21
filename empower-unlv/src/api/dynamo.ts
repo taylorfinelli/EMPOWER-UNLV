@@ -14,8 +14,7 @@ const dynamoDB = new DynamoDB.DocumentClient({
   },
 });
 
-export const writeData = async (item: any) => {
-  console.log(item);
+export const writeItem = async (item: any) => {
   const params = {
     TableName: tableName,
     Item: item,
@@ -23,26 +22,38 @@ export const writeData = async (item: any) => {
 
   try {
     await dynamoDB.put(params).promise();
-    console.log("Data written successfully: ", item);
   } catch (error) {
     console.error("Error writing data: ", error);
+  }
+};
+
+export const getItem = async (item: any) => {
+  const params = {
+    TableName: tableName,
+    Key: { graphId: item.graphId, itemId: item.itemId },
+  };
+  try {
+    const response = await dynamoDB.get(params).promise();
+    return response.Item;
+  } catch (error) {
+    console.error("Error fetching item: ", error);
     throw error;
   }
 };
 
-/*
-for reading a specific item
+export const getDataForGraph = async (graphId: string) => {
   const params = {
     TableName: tableName,
-    Key: { id: item.id, graphId: item.graphId },
+    KeyConditionExpression: "graphId = :graphId",
+    ExpressionAttributeValues: {
+      ":graphId": graphId,
+    },
   };
-  try {
-    const response = await dynamoDB.get(params).promise();
-    console.log("Data written successfully: ", item);
-  } catch (error) {
-    console.error("Error writing data: ", error);
-    throw error;
-  }
-*/
 
-// https://dynobase.dev/dynamodb-batch-write-update-delete/
+  try {
+    const response = await dynamoDB.query(params).promise();
+    return response.Items;
+  } catch (error) {
+    console.error("Error fetching graph data: ", error);
+  }
+};
