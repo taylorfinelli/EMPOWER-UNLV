@@ -104,8 +104,6 @@ export const batchDelete = async (items: any[], exclude?: any[]) => {
   try {
     const excludeIds = exclude?.map((item) => item.itemId);
     const itemsToDelete = items.filter((item) => !excludeIds?.includes(item.itemId));
-    console.log(exclude);
-    console.log(itemsToDelete);
 
     if (itemsToDelete.length > 0) {
       const deleteRequests = itemsToDelete.map((item) => ({

@@ -1,5 +1,13 @@
-import { batchDelete, batchWrite, getItemIdsForGraph, writeItem } from "@/api/dynamo";
+import {
+  batchDelete,
+  batchWrite,
+  getDataForGraph,
+  getItemIdsForGraph,
+  writeItem,
+} from "@/api/dynamo";
 import { UploadMethod } from "@/enum";
+import { GraphIDs } from "@/graphIds";
+import { useEffect, useState } from "react";
 
 /*
   This handles the action of taking the file from the user and uploading it to DynamoDB.
@@ -14,6 +22,8 @@ import { UploadMethod } from "@/enum";
 
 const MAX_ENTRY_SIZE = 390000;
 
+// TODO: check to see what happens if upload fails on overwrite
+
 export async function uploadFileToDDB(
   file: File,
   uploadMethod: UploadMethod,
@@ -25,7 +35,7 @@ export async function uploadFileToDDB(
     const now = new Date().toISOString();
     // Uploading single entry
     if (file.size <= MAX_ENTRY_SIZE) {
-      const content = await file.text();
+      const content = formatCSV(await file.text());
       const itemId = uploadMethod + "#" + "put" + "#" + now;
       const item = { graphId: graphId, itemId: itemId, content: content };
       excludedItems.push(item);
@@ -37,7 +47,7 @@ export async function uploadFileToDDB(
       const items = [];
       let count = 1;
       while (fileText.length > 0) {
-        const content = fileText.substring(0, MAX_ENTRY_SIZE);
+        const content = formatCSV(fileText.substring(0, MAX_ENTRY_SIZE));
         fileText = fileText.slice(MAX_ENTRY_SIZE);
         const itemId = uploadMethod + "#" + "batchPut" + "#" + now + "#" + count;
         count++;
@@ -68,4 +78,40 @@ export function truncateText(text: string, maxLength: number, suffix: string = "
   if (text.length <= maxLength) return text;
   const truncated = text.slice(0, maxLength - suffix.length);
   return `${truncated}${suffix}`;
+}
+
+export function formatCSV(text: string): string[][] {
+  const rows = text.split("\n");
+  const result: string[][] = [];
+
+  for (const row of rows) {
+    // Split the row by commas and trim each column
+    const cols = row.split(",").map((cell) => cell.trim().replace(/\r$/, ""));
+    result.push(cols);
+  }
+
+  return result;
+}
+
+export function useGetDataForGraph(graphId: GraphIDs) {
+  const [data, setData] = useState<any>([]);
+  const [loading, setLoading] = useState<any>(true);
+  const [error, setError] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const result = await getDataForGraph(graphId);
+        setData(result);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [graphId]);
+
+  return { data, loading, error };
 }
