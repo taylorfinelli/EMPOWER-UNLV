@@ -1,6 +1,4 @@
-"use client";
-
-import * as React from "react";
+import React, { useEffect } from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -15,14 +13,19 @@ import {
 } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { graphIds } from "@/graphIds";
+import { useState } from "react";
 
 interface SelectGraphProps {
   setGraphId: React.Dispatch<React.SetStateAction<string | undefined>>;
 }
 
 export function SelectGraph({ setGraphId }: SelectGraphProps) {
-  const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
+  const [open, setOpen] = useState<boolean>(false);
+  const [value, setValue] = useState<string>("");
+
+  useEffect(() => {
+    setGraphId(value);
+  }, [value]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -44,7 +47,6 @@ export function SelectGraph({ setGraphId }: SelectGraphProps) {
                   value={graphId}
                   onSelect={(currentValue) => {
                     setValue(currentValue === value ? "" : currentValue);
-                    setGraphId(currentValue === value ? "" : currentValue);
                     setOpen(false);
                   }}
                 >
