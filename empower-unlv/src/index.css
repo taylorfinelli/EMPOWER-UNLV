@@ -24,4 +24,8 @@
     @apply scroll-m-20 text-3xl font-medium tracking-tight first:mt-0;
     font-family: 'Raleway', sans-serif;
   }
+
+  h3 {
+    @apply text-xl font-medium
+  }
 }
