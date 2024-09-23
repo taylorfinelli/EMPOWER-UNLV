@@ -1,5 +1,5 @@
 import { GraphIDs } from "@/graphIds";
-import { Chart, GoogleDataTableColumnRoleType } from "react-google-charts";
+import { Chart } from "react-google-charts";
 import { useGetDataForGraph } from "../admin/utils";
 import { LoaderCircle } from "lucide-react";
 import { useEffect, useState } from "react";
