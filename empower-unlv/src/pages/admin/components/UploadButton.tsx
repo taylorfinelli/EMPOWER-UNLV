@@ -42,11 +42,11 @@ export default function Alert({
         title: "Upload Success!",
         description: `Your file "${file!.name}" was uploaded successfully.`,
       });
-    } catch (error) {
+    } catch (error: any) {
       setUploadMethod(UploadMethod.APPEND);
       toast({
         title: "Upload Failed!",
-        description: "There was a problem uploading your file. Please try again.",
+        description: error.message,
       });
     }
   };
