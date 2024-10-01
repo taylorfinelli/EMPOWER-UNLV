@@ -7,7 +7,6 @@ import { filterOutDataForLine, getMarkerColors, parseData, slice2DArrayIntoCols 
 import { Circle, MapContainer, TileLayer } from "react-leaflet";
 import "@/index.css";
 import Separator from "@/components/separator";
-import { LeafletMouseEvent } from "leaflet";
 
 export default function Data() {
   const [graphData, setGraphData] = useState<any[]>([]);
