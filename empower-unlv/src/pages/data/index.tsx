@@ -7,6 +7,7 @@ import { filterOutDataForLine, getMarkerColors, parseData, slice2DArrayIntoCols 
 import { Circle, MapContainer, TileLayer } from "react-leaflet";
 import "@/index.css";
 import Separator from "@/components/separator";
+import "./SmoothWheelZoom.js";
 
 export default function Data() {
   const [graphData, setGraphData] = useState<any[]>([]);
@@ -75,6 +76,9 @@ export default function Data() {
             center={[38.0818112, -117.4048923]}
             zoom={6}
             className={`w-full h-[calc(100vh-10rem)] z-0`}
+            scrollWheelZoom={false}
+            smoothWheelZoom={true}
+            smoothSensitivity={10}
             scrollWheelZoom
           >
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
