@@ -79,6 +79,7 @@ export default function Data() {
             scrollWheelZoom={false}
             smoothWheelZoom={true}
             smoothSensitivity={10}
+            scrollWheelZoom
           >
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
             {locations.map((item) => (
