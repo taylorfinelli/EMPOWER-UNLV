@@ -25,7 +25,6 @@ export default function Data() {
   }, [data]);
 
   useEffect(() => {
-    console.log(lineToShow);
     if (lineToShow && parsedData) {
       setGraphData(filterOutDataForLine(lineToShow, parsedData));
     } else if (parsedData) {
@@ -48,7 +47,6 @@ export default function Data() {
   const height = maximized ? "h-[calc(100vh-10rem)]" : "h-[20rem]";
 
   const handleClick = (e: string) => {
-    console.log(e);
     if (lineToShow === e) {
       setLineToShow("");
     } else {
@@ -75,7 +73,6 @@ export default function Data() {
             center={[38.0818112, -117.4048923]}
             zoom={6}
             className={`w-full h-[calc(100vh-10rem)] z-0`}
-            scrollWheelZoom
           >
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
             {locations.map((item) => (
