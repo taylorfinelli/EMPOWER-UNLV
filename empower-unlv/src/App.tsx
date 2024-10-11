@@ -17,8 +17,8 @@ export default function App() {
             <Route path="/home" element={<Home />} />
             <Route path="/data" element={<Data />} />
             <Route path="/faq" element={<FAQ />} />
-            <Route path="/upload" element={<AdminUpload />} />
-            <Route path="/admin" element={<AdminLogin />} />
+            <Route path="/admin" element={<AdminUpload />} />
+            <Route path="/login" element={<AdminLogin />} />
           </Routes>
         </div>
       </Router>

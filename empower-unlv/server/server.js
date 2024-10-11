@@ -53,6 +53,23 @@ app.post('/login', (req, res) => {
     return res.status(401).send('Unauthorized');
 });
 
+// Middleware to validate JWT
+const authenticateJWT = (req, res, next) => {
+    const token = req.header('Authorization')?.split(' ')[1]; // Extract token from Authorization header
+    if (!token) return res.sendStatus(403); // No token, access denied
+
+    jwt.verify(token, process.env.VITE_JWT_SECRET, (err, user) => {
+        if (err) return res.sendStatus(403); // Invalid token, access denied
+        req.user = user; // Attach user info to request object
+        next(); // Proceed to the next middleware or route handler
+    });
+};
+
+// Protected route -- checks if token is valid
+app.get('/checkToken', authenticateJWT, (req, res) => {
+    res.json({ message: 'This is a protected route.', user: req.user });
+});
+
 // Start the server
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
