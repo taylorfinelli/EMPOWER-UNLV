@@ -1,24 +1,25 @@
 import { GraphIDs } from "@/graphIds";
-import { Chart } from "react-google-charts";
 import { useGetDataForGraph } from "../admin/utils";
 import { LoaderCircle, Maximize2, Minimize2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { filterOutDataForLine, getMarkerColors, parseData, slice2DArrayIntoCols } from "./utils";
+import { filterOutDataForLine, getMarkerColors, parseData } from "./utils";
 import { Circle, MapContainer, TileLayer } from "react-leaflet";
 import "@/index.css";
 import Separator from "@/components/separator";
 import "./SmoothWheelZoom.js";
+import Plot from "react-plotly.js";
 
 export default function Data() {
   const [graphData, setGraphData] = useState<any[]>([]);
   const [markerColors, setMarkerColors] = useState<any>(new Map());
   const [maximized, setMaximized] = useState<boolean>(true);
   const { data, loading } = useGetDataForGraph(GraphIDs.SC_V2);
-  const [cols, setCols] = useState<any[]>([]);
   const [parsedData, setParsedData] = useState<any[]>([]);
   const [lineToShow, setLineToShow] = useState<string>("");
 
   // TODO: make this work with multi-file fetches
+
+  ////////////////////////////// Data processing
   useEffect(() => {
     if (data[0]) {
       setParsedData(parseData(data[0].content));
@@ -26,7 +27,6 @@ export default function Data() {
   }, [data]);
 
   useEffect(() => {
-    console.log(lineToShow);
     if (lineToShow && parsedData) {
       setGraphData(filterOutDataForLine(lineToShow, parsedData));
     } else if (parsedData) {
@@ -34,17 +34,13 @@ export default function Data() {
     }
   }, [parsedData, lineToShow]);
 
-  useEffect(() => {
-    if (graphData) {
-      setCols(slice2DArrayIntoCols(graphData));
-    }
-  }, [graphData]);
+  ////////////////////////////// Map marker processing
 
   useEffect(() => {
-    if (cols.length > 0) {
-      setMarkerColors(getMarkerColors(cols));
+    if (graphData) {
+      setMarkerColors(getMarkerColors(graphData));
     }
-  }, [cols]);
+  }, [graphData]);
 
   const height = maximized ? "h-[calc(100vh-10rem)]" : "h-[20rem]";
 
@@ -97,7 +93,14 @@ export default function Data() {
         <LoaderCircle className="animate-spin" />
       ) : (
         <div className="w-full">
-          <Chart chartType="LineChart" data={graphData} width="100%" height="800px" />
+          <Plot
+            data={graphData}
+            layout={{
+              title: "Line Graph Example",
+              xaxis: { title: "Date" },
+              yaxis: { title: "Values" },
+            }}
+          />
         </div>
       )}
     </div>
@@ -125,3 +128,24 @@ const locations: { name: string; center: [number, number]; radius: number }[] = 
   { name: "TMWRF", center: [39.534101, -119.752967], radius: 2500 },
   // TODO: which buildings are the UNR buildings?
 ];
+
+const locationNames: Map<string, string> = new Map([
+  ["CH1", "City of Henderson 1"],
+  ["CH2", "City of Henderson 2"],
+  ["CH3", "City of Henderson 3"],
+  ["BC", "Boulder City"],
+  ["CC", "Clark County"],
+  ["CLV", "City of Las Vegas"],
+  ["NLV", "North Las Vegas"],
+  ["BD", "Blue Diamond"],
+  ["SL", "Searchlight"],
+  ["LAU", "Laughlin"],
+  ["PR1", "Pahrump 1"],
+  ["PR2", "Pahrump 2"],
+  ["PR3", "Pahrump 3"],
+  ["IS", "Indian Springs"],
+  ["MV", "Moapa Valley"],
+  ["BEA", "Beatty"],
+  ["CAR", "Carson City"],
+  ["TMWRF", "Sparks"],
+]);
