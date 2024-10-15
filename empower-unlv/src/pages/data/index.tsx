@@ -75,6 +75,8 @@ export default function Data() {
             scrollWheelZoom={false}
             smoothWheelZoom={true}
             smoothSensitivity={10}
+            maxZoom={11}
+            minZoom={6}
           >
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
             {locations.map((item) => (
@@ -92,14 +94,17 @@ export default function Data() {
       {loading && data ? (
         <LoaderCircle className="animate-spin" />
       ) : (
-        <div className="w-full">
+        <div className="w-[80%] flex justify-center">
           <Plot
+            className="w-full"
             data={graphData}
             layout={{
-              title: "Line Graph Example",
+              title: `Data for ${lineToShow ? locationNames.get(lineToShow) : "Nevada"}`,
               xaxis: { title: "Date" },
               yaxis: { title: "Values" },
+              autosize: true,
             }}
+            useResizeHandler
           />
         </div>
       )}

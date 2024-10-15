@@ -57,7 +57,7 @@ export function getMarkerColors(columns: any[]): Map<string, string> {
 
 // Assuming getMarkerColor function is defined as before
 export function getMarkerColor(col: any[]): string {
-  const numbers = col.filter((item) => item);
+  const numbers = col.filter((item) => item !== null);
 
   const [secondLast, last] = numbers.slice(-2);
 
