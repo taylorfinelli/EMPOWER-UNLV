@@ -3,14 +3,6 @@ import { UploadMethod } from "@/enum";
 import { GraphIDs } from "@/graphIds";
 import { useEffect, useState } from "react";
 
-async function hashPassword(password: string) {
-  return Crypto;
-}
-
-export async function storeUser(username: any, password: any) {
-  console.log(hashPassword(password));
-}
-
 /*
   This handles the action of taking the file from the user and uploading it to DynamoDB.
   It works like this: 

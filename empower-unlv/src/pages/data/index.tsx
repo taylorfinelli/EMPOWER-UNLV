@@ -45,7 +45,6 @@ export default function Data() {
   const height = maximized ? "h-[calc(100vh-10rem)]" : "h-[20rem]";
 
   const handleClick = (e: string) => {
-    console.log(e);
     if (lineToShow === e) {
       setLineToShow("");
     } else {

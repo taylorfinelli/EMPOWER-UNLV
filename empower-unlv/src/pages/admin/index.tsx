@@ -1,60 +1,60 @@
 import { useState } from "react";
-import UploadFile from "./components/UploadFile";
-import { SelectGraph } from "./components/SelectGraph";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import ClearFile from "./components/ClearFile";
-import UploadMethodRadio from "./components/UploadMethodRadio";
-import { UploadMethod } from "@/enum";
-import UploadButton from "./components/UploadButton";
-import { truncateText } from "./utils";
-import { LoaderCircle } from "lucide-react";
 
-export default function Admin() {
-  const [file, setFile] = useState<File | null | undefined>();
-  const [graphId, setGraphId] = useState<string | undefined>();
-  const [uploadMethod, setUploadMethod] = useState<UploadMethod>(UploadMethod.APPEND);
-  const [uploading, setUploading] = useState<boolean>(false);
+export default function AdminLogin() {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const token = window.localStorage.getItem("token");
+
+  if (token) {
+    window.location.href = "/upload";
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(""); // Clear previous error
+
+    try {
+      const response = await fetch("http://localhost:3000/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Login failed. Please check your credentials.");
+      }
+
+      const data = await response.json();
+      localStorage.setItem("token", data.token); // Store the JWT token
+      // Redirect or update state to show logged-in user
+      window.location.href = "/admin/upload";
+    } catch (error: any) {
+      setError(error.message);
+    }
+  };
 
   return (
-    <div className="flex flex-row justify-center pt-12">
-      {uploading ? (
-        <div className="flex flex-row gap-x-2">
-          <LoaderCircle className="animate-spin" />
-          <p>Uploading</p>
-        </div>
-      ) : (
-        <Card>
-          <CardHeader>
-            <CardTitle>Update Graph</CardTitle>
-            <CardDescription>
-              Select a .csv file and the graph you'd like to update.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-4">
-            <div className="flex flex-row items-center gap-x-2">
-              <UploadFile file={file} setFile={setFile} />
-              {file ? (
-                <>
-                  <p>{truncateText(file.name, 30)}</p>
-                  <ClearFile setFile={setFile} />
-                </>
-              ) : (
-                <p>Upload a file</p>
-              )}
-            </div>
-            <SelectGraph setGraphId={setGraphId} />
-            <UploadMethodRadio setUploadMethod={setUploadMethod} />
-            <UploadButton
-              file={file}
-              setFile={setFile}
-              graphId={graphId}
-              uploadMethod={uploadMethod}
-              setUploading={setUploading}
-              setUploadMethod={setUploadMethod}
-            />
-          </CardContent>
-        </Card>
-      )}
-    </div>
+    <form onSubmit={handleSubmit}>
+      <input
+        type="text"
+        placeholder="Username"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        required
+      />
+      <input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+      />
+      <button type="submit">Login</button>
+      {error && <p style={{ color: "red" }}>{error}</p>}
+    </form>
   );
 }
