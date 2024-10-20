@@ -5,6 +5,8 @@ import Data from "./pages/data";
 import FAQ from "./pages/faq";
 import AdminUpload from "./pages/admin/upload";
 import AdminLogin from "./pages/admin";
+import AdminUpload from "./pages/admin/upload";
+import AdminLogin from "./pages/admin";
 
 export default function App() {
   return (
