@@ -1,15 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { validateToken } from "./utils";
 
 export default function AdminLogin() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const token = window.localStorage.getItem("token");
-
-  if (token) {
-    window.location.href = "/upload";
-  }
+  useEffect(() => {
+    validateToken();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,7 +30,7 @@ export default function AdminLogin() {
       const data = await response.json();
       localStorage.setItem("token", data.token); // Store the JWT token
       // Redirect or update state to show logged-in user
-      window.location.href = "/admin/upload";
+      window.location.href = "/admin";
     } catch (error: any) {
       setError(error.message);
     }

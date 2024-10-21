@@ -1,12 +1,12 @@
-import { useState } from "react";
-import UploadFile from "../components/UploadFile";
-import { SelectGraph } from "../components/SelectGraph";
+import { useEffect, useState } from "react";
+import UploadFile from "@/pages/admin/components/UploadFile";
+import { SelectGraph } from "@/pages/admin/components/SelectGraph";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import ClearFile from "../components/ClearFile";
-import UploadMethodRadio from "../components/UploadMethodRadio";
+import ClearFile from "@/pages/admin/components/ClearFile";
+import UploadMethodRadio from "@/pages/admin/components/UploadMethodRadio";
 import { UploadMethod } from "@/enum";
-import UploadButton from "../components/UploadButton";
-import { truncateText } from "../utils";
+import UploadButton from "@/pages/admin/components/UploadButton";
+import { validateToken, truncateText } from "../utils";
 import { LoaderCircle } from "lucide-react";
 
 export default function AdminUpload() {
@@ -14,16 +14,15 @@ export default function AdminUpload() {
   const [graphId, setGraphId] = useState<string | undefined>();
   const [uploadMethod, setUploadMethod] = useState<UploadMethod>(UploadMethod.APPEND);
   const [uploading, setUploading] = useState<boolean>(false);
+  const [validToken, setValidToken] = useState<boolean>(false);
 
-  const token = localStorage.getItem("token");
-
-  if (!token) {
-    window.location.href = "/admin";
-  }
+  useEffect(() => {
+    validateToken(setValidToken);
+  }, []);
 
   return (
     <>
-      {token && (
+      {validToken && (
         <div className="flex flex-row justify-center pt-12">
           {uploading ? (
             <div className="flex flex-row gap-x-2">

@@ -1,7 +1,7 @@
 import { batchDelete, getDataForGraph, getItemIdsForGraph, writeItem } from "@/api/dynamo";
 import { UploadMethod } from "@/enum";
 import { GraphIDs } from "@/graphIds";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 /*
   This handles the action of taking the file from the user and uploading it to DynamoDB.
@@ -119,4 +119,34 @@ export function useGetDataForGraph(graphId: GraphIDs) {
   }, [graphId]);
 
   return { data, loading, error };
+}
+
+export async function validateToken(setValidToken?: Dispatch<SetStateAction<boolean>>) {
+  const token = localStorage.getItem("token");
+  try {
+    const response = await fetch("http://localhost:3000/checkToken", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Token is invalid or expired.");
+    }
+
+    if (setValidToken) {
+      setValidToken(true);
+    }
+
+    if (window.location.pathname != "/admin") {
+      window.location.href = "/admin"; // Redirect to login
+    }
+  } catch (error: any) {
+    console.error("Login required!");
+    localStorage.removeItem("token"); // Clear invalid token
+    if (window.location.pathname != "/login") {
+      window.location.href = "/login"; // Redirect to login
+    }
+  }
 }
