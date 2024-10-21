@@ -28,21 +28,6 @@ export function parseData(data: any[][]) {
   return formattedData;
 }
 
-// export function slice2DArrayIntoCols<T>(array: T[][]): T[][] {
-//   if (array.length === 0) return [];
-
-//   const numCols = array[0].length;
-//   const cols: T[][] = Array.from({ length: numCols }, () => []);
-
-//   for (const row of array) {
-//     for (let colIndex = 0; colIndex < numCols; colIndex++) {
-//       cols[colIndex].push(row[colIndex]);
-//     }
-//   }
-
-//   return cols;
-// }
-
 export function getMarkerColors(columns: any[]): Map<string, string> {
   const colorMap = new Map<string, string>();
 
@@ -95,6 +80,27 @@ export const locations: { name: string; center: [number, number]; radius: number
   { name: "TMWRF", center: [39.534101, -119.752967], radius: 2500 },
   // TODO: which buildings are the UNR buildings?
 ];
+
+export const locationToCoordinatesMap = new Map<string, [number, number]>([
+  ["CH1", [35.998879, -115.093735]],
+  ["CH2", [36.0707022, -115.0555679]],
+  ["CH3", [36.088366, -114.992332]],
+  ["BC", [35.968555, -114.845233]],
+  ["CC", [36.125958, -115.226552]],
+  ["CLV", [36.174935, -115.155059]],
+  ["NLV", [36.23991, -115.0971]],
+  ["BD", [36.043714, -115.404379]],
+  ["SL", [35.464653, -114.919915]],
+  ["LAU", [35.167244, -114.577071]],
+  ["PR1", [36.284049, -115.980921]],
+  ["PR2", [36.251197, -115.811174]],
+  ["PR3", [36.163895, -115.903833]],
+  ["IS", [36.573276, -115.673188]],
+  ["MV", [36.549854, -114.453287]],
+  ["BEA", [36.9084, -116.759308]],
+  ["CAR", [39.173345, -119.743899]],
+  ["TMWRF", [39.534101, -119.752967]],
+]);
 
 export const locationNamesMap: Map<string, string> = new Map([
   ["CH1", "City of Henderson 1"],
