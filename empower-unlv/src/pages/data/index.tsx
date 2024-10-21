@@ -58,14 +58,14 @@ export default function Data() {
         <Separator title="Map of Nevada" />
       </div>
       <div className={`w-[80%] ${height} relative transition-all duration-200`}>
-        {/* <div
+        <div
           className="absolute right-0 z-[1] cursor-pointer p-1 bg-white bg-opacity-90 
           m-2 border-solid border-gray-500 border-2 border-opacity-65 rounded-sm
           hover:bg-gray-100 hover:bg-opacity-90"
           onClick={() => setMaximized(!maximized)}
         >
           {maximized ? <Minimize2 /> : <Maximize2 />}
-        </div> */}
+        </div>
         {markerColors.size > 0 && (
           <MapContainer
             center={[38.0818112, -117.4048923]}
