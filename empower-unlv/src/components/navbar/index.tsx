@@ -8,7 +8,6 @@ export default function NavBar() {
   const menuItems = [
     { text: "Home", href: "" },
     { text: "Data", href: "data" },
-    { text: "Variant Testing", href: "variant-testing" },
     { text: "FAQ", href: "faq" },
     { text: "Contact", href: "contact" },
   ];
