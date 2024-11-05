@@ -9,6 +9,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
+import ReCAPTCHA from "react-google-recaptcha";
+import { useRef } from "react";
 
 export default function Contact() {
   const {
@@ -18,6 +20,10 @@ export default function Contact() {
   } = useForm<ContactFormData>({
     resolver: zodResolver(contactFormSchema),
   });
+
+  const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
+  const recaptchaRef = useRef(null);
+
   return (
     <div className="flex flex-col items-center py-16">
       <div className="w-[80%] flex flex-col gap-y-8">
@@ -49,7 +55,8 @@ export default function Contact() {
               <Textarea placeholder="Message" id="message" {...register("message")} />
               {errors.message && <Label className="text-red-600">{errors.message.message}</Label>}
             </div>
-            <Button className="w-24" type="submit">
+            <ReCAPTCHA sitekey={siteKey} ref={recaptchaRef} />
+            <Button className="w-24" disabled={!recaptchaRef.current} type="submit">
               Submit
             </Button>
           </form>
