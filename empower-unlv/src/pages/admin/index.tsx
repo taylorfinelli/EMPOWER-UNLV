@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
 import { validateToken } from "./utils";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 
 export default function AdminLogin() {
   const [username, setUsername] = useState("");
@@ -37,23 +41,30 @@ export default function AdminLogin() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        required
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      />
-      <button type="submit">Login</button>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-    </form>
+    <div className="flex flex-row justify-center pt-12">
+      <Card>
+        <CardHeader>Login</CardHeader>
+        <CardContent>
+          <form className="flex flex-col gap-y-2 w-72" onSubmit={handleSubmit}>
+            <Input
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+            <Input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <Button type="submit">Login</Button>
+            {error && <Label style={{ color: "red" }}>{error}</Label>}
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
