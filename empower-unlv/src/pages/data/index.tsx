@@ -64,8 +64,8 @@ export default function Data() {
         <Separator title="Map of Nevada" />
       </div>
       {markerColors.size > 0 && (
-        <div className="w-[95%] grid grid-flow-col grid-cols-12">
-          <div className="col-span-4 items-center gap-y-4 flex flex-col">
+        <div className="w-[95%] flex flex-col md:grid md:grid-flow-col md:grid-cols-12">
+          <div className="col-span-6 items-center gap-y-4 flex flex-col">
             <h2>Select a region to filter data</h2>
             <SelectCity setLineToShow={setLineToShow} setValue={setValue} value={value} />
             <Plot
@@ -85,7 +85,7 @@ export default function Data() {
           <MapContainer
             center={[38.0818112, -117.4048923]}
             zoom={6}
-            className={`w-full h-[calc(100vh-10rem)] z-0 col-span-8`}
+            className={`w-full h-[calc(100vh-10rem)] z-0 col-span-6`}
             scrollWheelZoom={false}
             smoothWheelZoom={true}
             smoothSensitivity={10}

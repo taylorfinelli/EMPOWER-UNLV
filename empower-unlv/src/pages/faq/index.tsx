@@ -40,7 +40,7 @@ export default function FAQ() {
         <div className="w-[70%] min-w-[325px]">
           <Accordion type="multiple">
             {accordionItems.map((item, id) => (
-              <>
+              <div key={id}>
                 <AccordionItem value={id.toString()}>
                   <AccordionTrigger>
                     {
@@ -55,7 +55,7 @@ export default function FAQ() {
                   </AccordionTrigger>
                   <AccordionContent>{item.content}</AccordionContent>
                 </AccordionItem>
-              </>
+              </div>
             ))}
           </Accordion>
         </div>
