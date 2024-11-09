@@ -13,6 +13,7 @@ export default function NavBar() {
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
       navigate("/" + item.href);
+      window.scrollTo({ top: 0 });
     }
   };
 

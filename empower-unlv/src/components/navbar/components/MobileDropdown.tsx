@@ -4,7 +4,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { additionalItems, menuItems } from "../utils";
+import { additionalItems, menuItems } from "@/components/navbar/utils";
 
 export default function MobileDropdown({ handleClick }: any) {
   const allMenuItems = [...menuItems, ...additionalItems];
