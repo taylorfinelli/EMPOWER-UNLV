@@ -13,7 +13,7 @@ export default function App() {
     <>
       <Router>
         <NavBar />
-        <div className="pt-16 overflow-y-auto h-screen">
+        <div className="pt-16">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/home" element={<Home />} />

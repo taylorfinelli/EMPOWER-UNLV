@@ -6,8 +6,8 @@ export default function Publications() {
     <div className="py-16 w-[80%] flex flex-col items-center gap-y-8">
       <Separator title="Publications" />
       <ol className="list-decimal pl-6 gap-y-4 flex flex-col">
-        {publications.map((publication) => (
-          <li>
+        {publications.map((publication, i) => (
+          <li key={i}>
             {publication.desc}
             {
               <>

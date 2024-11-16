@@ -7,6 +7,10 @@
     --radius: 0.5rem;
   }
 
+  body {
+    overflow-y: scroll;
+  }
+
   p {
     @apply leading-7
   }
