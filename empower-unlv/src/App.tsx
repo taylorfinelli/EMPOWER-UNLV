@@ -5,6 +5,8 @@ import Data from "./pages/data";
 import FAQ from "./pages/faq";
 import AdminUpload from "./pages/admin/upload";
 import AdminLogin from "./pages/admin";
+import Contact from "./pages/contact";
+import About from "./pages/about";
 
 export default function App() {
   return (
@@ -19,6 +21,8 @@ export default function App() {
             <Route path="/faq" element={<FAQ />} />
             <Route path="/admin" element={<AdminUpload />} />
             <Route path="/login" element={<AdminLogin />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/about" element={<About />} />
           </Routes>
         </div>
       </Router>

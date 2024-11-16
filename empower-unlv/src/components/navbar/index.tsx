@@ -1,21 +1,11 @@
 import Logos from "@/assets/logos/logos";
 import { useNavigate, useLocation } from "react-router-dom";
+import MobileDropdown from "./components/MobileDropdown";
+import { additionalItems, menuItems } from "./utils";
 
 export default function NavBar() {
   const navigate = useNavigate();
   const location = useLocation();
-
-  const menuItems = [
-    { text: "Home", href: "" },
-    { text: "Data", href: "data" },
-    { text: "FAQ", href: "faq" },
-    { text: "Contact", href: "contact" },
-  ];
-
-  const additionalItems = [
-    { text: "About", href: "about" },
-    { text: "Media", href: "media" },
-  ];
 
   const handleClick = (item: any) => {
     // scroll to top of window if we click on the tab of the current window, else navigate to it
@@ -23,13 +13,17 @@ export default function NavBar() {
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
       navigate("/" + item.href);
+      window.scrollTo({ top: 0 });
     }
   };
 
   return (
-    <div className="flex flex-row w-full h-16 bg-blue_primary items-center justify-between pr-6 fixed z-50">
-      <Logos />
-      <div className="flex flex-row gap-x-4">
+    <div className="flex flex-row w-full h-16 bg-blue_primary items-center justify-between md:pr-6 fixed z-50">
+      <Logos className="max-w-[50%] object-contain" />
+
+      <MobileDropdown handleClick={handleClick} />
+
+      <div className="md:flex flex-row gap-x-4 hidden">
         {menuItems.map((item, id) => (
           <p
             key={id}

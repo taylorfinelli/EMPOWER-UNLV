@@ -53,6 +53,7 @@ export const getItem = async (item: any) => {
   const params = {
     TableName: tableName,
     Key: { graphId: item.graphId, itemId: item.itemId },
+    ConsistentRead: false,
   };
   try {
     const response = await dynamoDB.get(params).promise();
@@ -70,6 +71,7 @@ export const getDataForGraph = async (graphId: string) => {
     ExpressionAttributeValues: {
       ":graphId": graphId,
     },
+    ConsistentRead: false,
   };
 
   try {
@@ -89,6 +91,7 @@ export const getItemIdsForGraph = async (graphId: string) => {
       ":graphId": graphId,
     },
     ProjectionExpression: "itemId",
+    ConsistentRead: false,
   };
 
   try {
