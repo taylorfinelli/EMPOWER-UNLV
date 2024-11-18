@@ -15,6 +15,7 @@ import Separator from "@/components/separator";
 import "./SmoothWheelZoom.js";
 import Plot from "react-plotly.js";
 import { SelectCity } from "./components/SelectCity.js";
+import VisitorMap from "./components/visitorMap/VisitorMap.js";
 
 export default function Data() {
   const [graphData, setGraphData] = useState<any[]>([]);
@@ -64,46 +65,52 @@ export default function Data() {
         <Separator title="Map of Nevada" />
       </div>
       {markerColors.size > 0 && (
-        <div className="w-[95%] flex flex-col md:grid md:grid-flow-col md:grid-cols-12">
-          <div className="col-span-6 items-center gap-y-4 flex flex-col">
-            <h2>Select a region to filter data</h2>
-            <SelectCity setLineToShow={setLineToShow} setValue={setValue} value={value} />
-            <Plot
-              className="w-full"
-              data={graphData}
-              layout={{
-                title: `Data for ${lineToShow ? locationNamesMap.get(lineToShow) : "Nevada"}`,
-                xaxis: { title: "Date" },
-                yaxis: { title: "Viral counts in wastewater (log10 gene copies/mm)" },
-                autosize: true,
-                showlegend: false,
-                font: { family: "Inter, sans-serif" },
-              }}
-              useResizeHandler
-            />
-          </div>
-          <MapContainer
-            center={[38.0818112, -117.4048923]}
-            zoom={6}
-            className={`w-full h-[calc(100vh-10rem)] z-0 col-span-6`}
-            scrollWheelZoom={false}
-            smoothWheelZoom={true}
-            smoothSensitivity={10}
-            maxZoom={11}
-            minZoom={6}
-          >
-            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-            {lineToShow && <FlyToMarker cityTag={lineToShow} handleClose={handleClose} />}
-            {locations.map((item) => (
-              <Circle
-                key={item.name}
-                center={item.center}
-                radius={item.radius}
-                color={markerColors.get(item.name)}
-                eventHandlers={{ click: () => handleClick(item.name) }}
+        <div className="w-[95%] flex flex-col gap-y-12">
+          <div className="flex flex-col md:grid md:grid-flow-col md:grid-cols-12">
+            <div className="col-span-6 items-center gap-y-4 flex flex-col">
+              <h2>Select a region to filter data</h2>
+              <SelectCity setLineToShow={setLineToShow} setValue={setValue} value={value} />
+              <Plot
+                className="w-full"
+                data={graphData}
+                layout={{
+                  title: `Data for ${lineToShow ? locationNamesMap.get(lineToShow) : "Nevada"}`,
+                  xaxis: { title: "Date" },
+                  yaxis: { title: "Viral counts in wastewater (log10 gene copies/mm)" },
+                  autosize: true,
+                  showlegend: false,
+                  font: { family: "Inter, sans-serif" },
+                }}
+                useResizeHandler
               />
-            ))}
-          </MapContainer>
+            </div>
+            <MapContainer
+              center={[38.0818112, -117.4048923]}
+              zoom={6}
+              className={`w-full h-[calc(100vh-10rem)] z-0 col-span-6`}
+              scrollWheelZoom={false}
+              smoothWheelZoom={true}
+              smoothSensitivity={10}
+              maxZoom={11}
+              minZoom={6}
+            >
+              <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+              {lineToShow && <FlyToMarker cityTag={lineToShow} handleClose={handleClose} />}
+              {locations.map((item) => (
+                <Circle
+                  key={item.name}
+                  center={item.center}
+                  radius={item.radius}
+                  color={markerColors.get(item.name)}
+                  eventHandlers={{ click: () => handleClick(item.name) }}
+                />
+              ))}
+            </MapContainer>
+          </div>
+          <div>
+            <Separator title="Our Visitors" />
+            <VisitorMap />
+          </div>
         </div>
       )}
     </div>

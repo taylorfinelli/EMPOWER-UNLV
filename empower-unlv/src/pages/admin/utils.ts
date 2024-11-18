@@ -124,6 +124,7 @@ export function useGetDataForGraph(graphId: GraphIDs) {
 export async function validateToken(setValidToken?: Dispatch<SetStateAction<boolean>>) {
   const token = localStorage.getItem("token");
   try {
+    // TODO: change this to remote server URL!
     const response = await fetch("http://localhost:3000/checkToken", {
       method: "GET",
       headers: {

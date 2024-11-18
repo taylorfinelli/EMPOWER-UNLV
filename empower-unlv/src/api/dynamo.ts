@@ -1,7 +1,9 @@
 import { DynamoDB } from "aws-sdk";
+import axios from "axios";
 
 const region = import.meta.env.VITE_AWS_REGION;
-const tableName = import.meta.env.VITE_DDB_TABLE_NAME;
+const empowerDataTableName = import.meta.env.VITE_DDB_DATA_TABLE_NAME;
+const empowerVisitorsTableName = import.meta.env.VITE_DDB_VISITOR_TABLE_NAME;
 
 const awsAccessKeyId = import.meta.env.VITE_AWS_ACCESS_KEY;
 const awsSecretAccessKey = import.meta.env.VITE_AWS_SECRET_ACCESS_KEY;
@@ -16,7 +18,7 @@ const dynamoDB = new DynamoDB.DocumentClient({
 
 export const writeItem = async (item: any) => {
   const params = {
-    TableName: tableName,
+    TableName: empowerDataTableName,
     Item: item,
   };
 
@@ -31,7 +33,7 @@ export const writeItem = async (item: any) => {
 export const batchWrite = async (items: any[]) => {
   const requestItems: DynamoDB.DocumentClient.BatchWriteItemRequestMap = {};
 
-  requestItems[tableName] = items.map((item) => ({
+  requestItems[empowerDataTableName] = items.map((item) => ({
     PutRequest: {
       Item: item,
     },
@@ -51,7 +53,7 @@ export const batchWrite = async (items: any[]) => {
 
 export const getItem = async (item: any) => {
   const params = {
-    TableName: tableName,
+    TableName: empowerDataTableName,
     Key: { graphId: item.graphId, itemId: item.itemId },
     ConsistentRead: false,
   };
@@ -66,7 +68,7 @@ export const getItem = async (item: any) => {
 
 export const getDataForGraph = async (graphId: string) => {
   const params = {
-    TableName: tableName,
+    TableName: empowerDataTableName,
     KeyConditionExpression: "graphId = :graphId",
     ExpressionAttributeValues: {
       ":graphId": graphId,
@@ -85,7 +87,7 @@ export const getDataForGraph = async (graphId: string) => {
 
 export const getItemIdsForGraph = async (graphId: string) => {
   const params = {
-    TableName: tableName,
+    TableName: empowerDataTableName,
     KeyConditionExpression: "graphId = :graphId",
     ExpressionAttributeValues: {
       ":graphId": graphId,
@@ -120,7 +122,7 @@ export const batchDelete = async (items: any[], exclude?: any[]) => {
 
       const params = {
         RequestItems: {
-          [tableName]: deleteRequests,
+          [empowerDataTableName]: deleteRequests,
         },
       };
 
@@ -129,5 +131,44 @@ export const batchDelete = async (items: any[], exclude?: any[]) => {
   } catch (error) {
     console.error("Error during batch delete: ", error);
     throw error;
+  }
+};
+
+export const handleVisitor = async (ip: string) => {
+  const ipInfoToken = import.meta.env.VITE_IPINFO_API_KEY;
+  const getParams = {
+    TableName: empowerVisitorsTableName,
+    Key: { ip: ip },
+    ConsistentRead: false,
+  };
+  try {
+    const response = await dynamoDB.get(getParams).promise();
+    if (!response.Item) {
+      const geoData: any = await axios.get(`https://api.ipdata.co/${ip}?api-key=${ipInfoToken}`);
+      const country = geoData.data.country_name;
+      const putParams = {
+        TableName: empowerVisitorsTableName,
+        Item: {
+          ip: ip,
+          country: country,
+        },
+      };
+      await dynamoDB.put(putParams).promise();
+    }
+  } catch (error) {
+    console.error("Error fetching item: ", error);
+    throw error;
+  }
+};
+
+export const handleVisitors = async (ip: string) => {
+  try {
+    // TODO: change this to remote server URL!
+    const response = await fetch("http://localhost:3000/").then((r) => r.json());
+    if (!response.ok) {
+      throw new Error("Unable to determine if user is unique!");
+    }
+  } catch (error: any) {
+    console.error(error);
   }
 };
