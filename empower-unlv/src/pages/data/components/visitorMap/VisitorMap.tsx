@@ -1,4 +1,3 @@
-import { getData } from "@/api/visitors";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import Plot from "react-plotly.js";
@@ -69,8 +68,6 @@ const natlLayout = {
   title: "United States Visitors", // Map title
   displayModeBar: false,
 };
-
-getData();
 
 export default function VisitorMap() {
   const [viewGlobalMap, setViewGlobalMap] = useState<boolean>(false);

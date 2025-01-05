@@ -1,4 +1,5 @@
 import { DynamoDB } from "aws-sdk";
+import iso from "iso-3166-1";
 
 const region = import.meta.env.VITE_AWS_REGION;
 const empowerVisitorsTableName = import.meta.env.VITE_DDB_VISITOR_TABLE_NAME;
@@ -20,13 +21,10 @@ export async function getData() {
   const ipAddress = (await response.json()).ip;
   // capture geolocation information
   const ipInfo = await (await fetch(`https://ipapi.co/${ipAddress}/json/`)).json();
-  console.log(ipInfo);
   return ipInfo;
 }
 
-export async function checkIfLogged() {
-  const data = await getData();
-
+export async function handleData(data: any) {
   const getParams = {
     TableName: empowerVisitorsTableName,
     Key: { ip: data.ip },
@@ -44,16 +42,24 @@ export async function checkIfLogged() {
   }
 }
 
-async function logData(data: any) {
-  const country = iso_3166_1.whereAlpha2(countryAlpha2);
-  const countryAlpha3 = country.alpha3;
-  const countryName = country.country;
-  const regionName = geoData.region;
+export async function logData(data: any) {
+  const info = await data;
+  const country = iso.whereAlpha2(info.country_code);
+
   const putParams = {
     TableName: empowerVisitorsTableName,
     Item: {
-      ip: data.ip,
-      country: data.country_code,
+      ip: info.ip,
+      countryCode: info.country_code,
+      country: country?.country,
+      regionName: info.region_code,
     },
   };
+
+  try {
+    await dynamoDB.put(putParams).promise();
+  } catch (error) {
+    console.error("Error fetching item: ", error);
+    throw error;
+  }
 }
