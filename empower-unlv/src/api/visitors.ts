@@ -1,9 +1,11 @@
 import { DynamoDB } from "aws-sdk";
 import iso from "iso-3166-1";
+import { states } from "./utils";
 
-const region = import.meta.env.VITE_AWS_REGION;
+const AWS_region = import.meta.env.VITE_AWS_REGION;
 const empowerVisitorsTableName = import.meta.env.VITE_DDB_VISITOR_TABLE_NAME;
 const empowerCountryCountsTableName = import.meta.env.VITE_DDB_COUNTRY_TABLE_NAME;
+const empowerRegionCountsTableName = import.meta.env.VITE_DDB_REGION_TABLE_NAME;
 
 const awsAccessKeyId = import.meta.env.VITE_AWS_ACCESS_KEY;
 const awsSecretAccessKey = import.meta.env.VITE_AWS_SECRET_ACCESS_KEY;
@@ -11,7 +13,7 @@ const awsSecretAccessKey = import.meta.env.VITE_AWS_SECRET_ACCESS_KEY;
 const IPINFO_API_KEY = import.meta.env.VITE_IPINFO_API_KEY;
 
 const dynamoDB = new DynamoDB.DocumentClient({
-  region: region,
+  region: AWS_region,
   credentials: {
     accessKeyId: awsAccessKeyId,
     secretAccessKey: awsSecretAccessKey,
@@ -50,13 +52,13 @@ export async function handleData(data: any) {
 
 export async function logData(data: any) {
   const info = await data;
-  const country = iso.whereAlpha2(info.country_code);
+  const country = iso.whereAlpha2(info.country);
 
   const putParams = {
     TableName: empowerVisitorsTableName,
     Item: {
       ip: info.ip,
-      countryCode: info.country_code,
+      countryCode: country?.alpha3,
       country: country?.country,
       regionName: info.region_code,
     },
@@ -65,14 +67,28 @@ export async function logData(data: any) {
   try {
     // log client data
     await dynamoDB.put(putParams).promise();
-    handleCountryData(info.country_code);
+    handleCountryData(country?.alpha3);
+    if (info.country == "US") {
+      const region = states.get(info.region);
+      const updateParams = {
+        TableName: empowerRegionCountsTableName,
+        Key: { region },
+        UpdateExpression: "SET amount = if_not_exists(amount, :start) + :increment",
+        ExpressionAttributeValues: {
+          ":increment": 1,
+          ":start": 0,
+        },
+        ReturnValues: "ALL_NEW",
+      };
+      await dynamoDB.update(updateParams).promise();
+    }
   } catch (error) {
     console.error("Error writing item: ", error);
     throw error;
   }
 }
 
-export async function handleCountryData(countryCode: string) {
+export async function handleCountryData(countryCode: string | undefined) {
   const updateParams = {
     TableName: empowerCountryCountsTableName,
     Key: { countryCode },
@@ -88,19 +104,7 @@ export async function handleCountryData(countryCode: string) {
     // DDB's update() will insert the item if it doesn't exist
     await dynamoDB.update(updateParams).promise();
   } catch (error: any) {
-    if (error.code === "ConditionalCheckFailedException") {
-      // in case of a conditional failure, meaning item doesn't exist, perform a put
-      const putParamsDNE = {
-        TableName: empowerCountryCountsTableName,
-        Item: {
-          countryCode: countryCode,
-          amount: 1,
-        },
-      };
-      await dynamoDB.put(putParamsDNE).promise();
-    } else {
-      console.error("Error handling country data:", error);
-      throw error;
-    }
+    console.error("Error handling country data:", error);
+    throw error;
   }
 }
