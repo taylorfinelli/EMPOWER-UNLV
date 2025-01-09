@@ -8,6 +8,8 @@ const empowerCountryCountsTableName = import.meta.env.VITE_DDB_COUNTRY_TABLE_NAM
 const awsAccessKeyId = import.meta.env.VITE_AWS_ACCESS_KEY;
 const awsSecretAccessKey = import.meta.env.VITE_AWS_SECRET_ACCESS_KEY;
 
+const IPINFO_API_KEY = import.meta.env.VITE_IPINFO_API_KEY;
+
 const dynamoDB = new DynamoDB.DocumentClient({
   region: region,
   credentials: {
@@ -21,7 +23,9 @@ export async function getData() {
   const response = await fetch("https://api.ipify.org?format=json");
   const ipAddress = (await response.json()).ip;
   // capture geolocation information
-  const ipInfo = await (await fetch(`https://ipapi.co/${ipAddress}/json/`)).json();
+  const ipInfo = await (
+    await fetch(`https://ipinfo.io/${ipAddress}/json?token=${IPINFO_API_KEY}`)
+  ).json();
   return ipInfo;
 }
 
