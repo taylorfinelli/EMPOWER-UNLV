@@ -1,6 +1,7 @@
 import { DynamoDB } from "aws-sdk";
 import iso from "iso-3166-1";
 import { states } from "./utils";
+import { useEffect, useState } from "react";
 
 const AWS_region = import.meta.env.VITE_AWS_REGION;
 const empowerVisitorsTableName = import.meta.env.VITE_DDB_VISITOR_TABLE_NAME;
@@ -46,7 +47,6 @@ export async function handleData(data: any) {
     }
   } catch (error) {
     console.error("Error fetching item: ", error);
-    throw error;
   }
 }
 
@@ -67,7 +67,7 @@ export async function logData(data: any) {
   try {
     // log client data
     await dynamoDB.put(putParams).promise();
-    handleCountryData(country?.alpha3);
+    handleCountryData(country?.alpha3, country?.country);
     if (info.country == "US") {
       const region = states.get(info.region);
       const updateParams = {
@@ -84,18 +84,22 @@ export async function logData(data: any) {
     }
   } catch (error) {
     console.error("Error writing item: ", error);
-    throw error;
   }
 }
 
-export async function handleCountryData(countryCode: string | undefined) {
+export async function handleCountryData(
+  countryCode: string | undefined,
+  countryName: string | undefined
+) {
   const updateParams = {
     TableName: empowerCountryCountsTableName,
     Key: { countryCode },
-    UpdateExpression: "SET amount = if_not_exists(amount, :start) + :increment",
+    UpdateExpression:
+      "SET amount = if_not_exists(amount, :start) + :increment, countryName = :countryName",
     ExpressionAttributeValues: {
       ":increment": 1,
       ":start": 0,
+      ":countryName": countryName,
     },
     ReturnValues: "ALL_NEW",
   };
@@ -105,6 +109,75 @@ export async function handleCountryData(countryCode: string | undefined) {
     await dynamoDB.update(updateParams).promise();
   } catch (error: any) {
     console.error("Error handling country data:", error);
-    throw error;
   }
+}
+
+export function useGetUSMapData() {
+  const [locations, setLocations] = useState<string[]>([]);
+  const [z, setZ] = useState<number[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const getParams = {
+        TableName: empowerRegionCountsTableName,
+        ConsistentRead: false,
+      };
+      try {
+        const response = await dynamoDB.scan(getParams).promise();
+        const tempLocations: string[] = [];
+        const tempZ: number[] = [];
+
+        if (response.Items) {
+          response.Items.forEach((region: any) => {
+            tempZ.push(region.amount);
+            tempLocations.push(region.region);
+          });
+        }
+
+        setLocations(tempLocations);
+        setZ(tempZ);
+      } catch (error: any) {
+        console.error("Error fetching region data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  return { locations, z };
+}
+
+export function useGetGlobalMapData() {
+  const [locations, setLocations] = useState<string[]>([]);
+  const [z, setZ] = useState<number[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const getParams = {
+        TableName: empowerCountryCountsTableName,
+        ConsistentRead: false,
+      };
+      try {
+        const response = await dynamoDB.scan(getParams).promise();
+        const tempLocations: string[] = [];
+        const tempZ: number[] = [];
+
+        if (response.Items) {
+          response.Items.forEach((region: any) => {
+            tempZ.push(region.amount);
+            tempLocations.push(region.countryName);
+          });
+        }
+
+        setLocations(tempLocations);
+        setZ(tempZ);
+      } catch (error: any) {
+        console.error("Error fetching region data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  return { locations, z };
 }

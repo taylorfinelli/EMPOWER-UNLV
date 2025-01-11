@@ -160,15 +160,3 @@ export const handleVisitor = async (ip: string) => {
     throw error;
   }
 };
-
-export const handleVisitors = async (ip: string) => {
-  try {
-    // TODO: change this to remote server URL!
-    const response = await fetch("http://localhost:3000/").then((r) => r.json());
-    if (!response.ok) {
-      throw new Error("Unable to determine if user is unique!");
-    }
-  } catch (error: any) {
-    console.error(error);
-  }
-};
