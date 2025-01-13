@@ -8,26 +8,32 @@ import { UploadMethod } from "@/enum";
 import UploadButton from "@/pages/admin/components/UploadButton";
 import { truncateText } from "../utils";
 import { LoaderCircle } from "lucide-react";
-import { useAuth } from "@/context/GlobalContext";
 import { useNavigate } from "react-router-dom";
+import verifyToken from "@/auth/verify-token";
 
 export default function AdminUpload() {
   const [file, setFile] = useState<File | null | undefined>();
   const [graphId, setGraphId] = useState<string | undefined>();
   const [uploadMethod, setUploadMethod] = useState<UploadMethod>(UploadMethod.APPEND);
   const [uploading, setUploading] = useState<boolean>(false);
-  const { isLoggedIn } = useAuth();
+  const [isTokenValid, setIsTokenValid] = useState<boolean | undefined>(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isLoggedIn) {
-      navigate("/login");
-    }
+    const checkToken = async () => {
+      const validToken = await verifyToken();
+      setIsTokenValid(validToken);
+      if (!validToken) {
+        navigate("/login");
+      }
+    };
+
+    checkToken();
   }, []);
 
   return (
     <>
-      {isLoggedIn && (
+      {isTokenValid && (
         <div className="flex flex-row justify-center pt-12">
           {uploading ? (
             <div className="flex flex-row gap-x-2">

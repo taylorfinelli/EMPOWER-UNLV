@@ -4,14 +4,13 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { signIn } from "@/auth/auth-service";
-import { useAuth } from "@/context/GlobalContext";
 import { useNavigate } from "react-router-dom";
+import verifyToken from "@/auth/verify-token";
 
 export default function AdminLogin() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState<string | null>(null);
-  const { setIsLoggedIn } = useAuth();
   const navigate = useNavigate();
 
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -29,9 +28,9 @@ export default function AdminLogin() {
 
     if (session && session.AccessToken) {
       sessionStorage.setItem("accessToken", session.AccessToken);
+      const validToken = await verifyToken();
 
-      if (sessionStorage.getItem("accessToken")) {
-        setIsLoggedIn(true);
+      if (validToken) {
         navigate("/admin");
       } else {
         console.error("Session token was not set properly.");
