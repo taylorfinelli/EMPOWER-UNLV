@@ -6,23 +6,28 @@ import ClearFile from "@/pages/admin/components/ClearFile";
 import UploadMethodRadio from "@/pages/admin/components/UploadMethodRadio";
 import { UploadMethod } from "@/enum";
 import UploadButton from "@/pages/admin/components/UploadButton";
-import { validateToken, truncateText } from "../utils";
+import { truncateText } from "../utils";
 import { LoaderCircle } from "lucide-react";
+import { useAuth } from "@/context/GlobalContext";
+import { useNavigate } from "react-router-dom";
 
 export default function AdminUpload() {
   const [file, setFile] = useState<File | null | undefined>();
   const [graphId, setGraphId] = useState<string | undefined>();
   const [uploadMethod, setUploadMethod] = useState<UploadMethod>(UploadMethod.APPEND);
   const [uploading, setUploading] = useState<boolean>(false);
-  const [validToken, setValidToken] = useState<boolean>(false);
+  const { isLoggedIn } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    validateToken(setValidToken);
+    if (!isLoggedIn) {
+      navigate("/login");
+    }
   }, []);
 
   return (
     <>
-      {validToken && (
+      {isLoggedIn && (
         <div className="flex flex-row justify-center pt-12">
           {uploading ? (
             <div className="flex flex-row gap-x-2">
