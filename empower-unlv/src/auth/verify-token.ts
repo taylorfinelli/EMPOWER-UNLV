@@ -10,12 +10,11 @@ export default async function verifyToken() {
   try {
     const token = sessionStorage.getItem("accessToken");
     if (token) {
-      const payload = await verifier.verify(token);
-      console.log("Token is valid. Payload:", payload);
+      await verifier.verify(token);
       return true;
     }
   } catch {
-    console.log("Token not valid!");
+    console.error("Login required!");
     return false;
   }
 }
