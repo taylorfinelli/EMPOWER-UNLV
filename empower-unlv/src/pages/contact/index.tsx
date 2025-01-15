@@ -85,7 +85,8 @@ export default function Contact() {
               {errors.message && <Label className="text-red-600">{errors.message.message}</Label>}
             </div>
             <ReCAPTCHA sitekey={siteKey} ref={recaptchaRef} />
-            <Button className="w-24" disabled={!recaptchaRef.current} type="submit">
+            <Button className="w-24" type="submit">
+              {/* add disabled={recaptcha.current} when set up */}
               Submit
             </Button>
           </form>
