@@ -4,17 +4,29 @@ import Email from "./components/Email";
 import Call from "./components/Call";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { ContactFormData, contactFormSchema, submitContactRequest } from "@/api/contactForm";
 import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useRef } from "react";
+import { sendEmail } from "@/api/ses";
+import { z } from "zod";
+import { Toaster } from "@/components/ui/toaster";
+import { toast } from "@/hooks/use-toast";
+
+const contactFormSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Invalid email address"),
+  message: z.string().min(1, "Message is required").max(1000, "Max character count of 1000"),
+});
+
+type ContactFormData = z.infer<typeof contactFormSchema>;
 
 export default function Contact() {
   const {
     register,
+    reset,
     handleSubmit,
     formState: { errors },
   } = useForm<ContactFormData>({
@@ -23,6 +35,23 @@ export default function Contact() {
 
   const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
   const recaptchaRef = useRef(null);
+
+  async function submitContactRequest(data: ContactFormData) {
+    try {
+      await sendEmail(data.name, data.email, data.message);
+      reset();
+      toast({
+        title: "Message sent successfully!",
+        description: "Someone will be contacting you soon.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Message unable to send!",
+        description: "Please try again later.",
+      });
+      console.error(error);
+    }
+  }
 
   return (
     <div className="flex flex-col items-center py-16">
@@ -56,12 +85,14 @@ export default function Contact() {
               {errors.message && <Label className="text-red-600">{errors.message.message}</Label>}
             </div>
             <ReCAPTCHA sitekey={siteKey} ref={recaptchaRef} />
-            <Button className="w-24" disabled={!recaptchaRef.current} type="submit">
+            <Button className="w-24" type="submit">
+              {/* add disabled={recaptcha.current} when set up */}
               Submit
             </Button>
           </form>
         </div>
       </div>
+      <Toaster />
     </div>
   );
 }

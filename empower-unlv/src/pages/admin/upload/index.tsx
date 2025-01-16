@@ -6,23 +6,34 @@ import ClearFile from "@/pages/admin/components/ClearFile";
 import UploadMethodRadio from "@/pages/admin/components/UploadMethodRadio";
 import { UploadMethod } from "@/enum";
 import UploadButton from "@/pages/admin/components/UploadButton";
-import { validateToken, truncateText } from "../utils";
+import { truncateText } from "../utils";
 import { LoaderCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import verifyToken from "@/auth/verify-token";
 
 export default function AdminUpload() {
   const [file, setFile] = useState<File | null | undefined>();
   const [graphId, setGraphId] = useState<string | undefined>();
   const [uploadMethod, setUploadMethod] = useState<UploadMethod>(UploadMethod.APPEND);
   const [uploading, setUploading] = useState<boolean>(false);
-  const [validToken, setValidToken] = useState<boolean>(false);
+  const [isTokenValid, setIsTokenValid] = useState<boolean | undefined>(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    validateToken(setValidToken);
+    const checkToken = async () => {
+      const validToken = await verifyToken();
+      setIsTokenValid(validToken);
+      if (!validToken) {
+        navigate("/login");
+      }
+    };
+
+    checkToken();
   }, []);
 
   return (
     <>
-      {validToken && (
+      {isTokenValid && (
         <div className="flex flex-row justify-center pt-12">
           {uploading ? (
             <div className="flex flex-row gap-x-2">

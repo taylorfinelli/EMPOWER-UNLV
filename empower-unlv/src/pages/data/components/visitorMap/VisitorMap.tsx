@@ -1,18 +1,7 @@
+import { useGetGlobalMapData, useGetUSMapData } from "@/api/visitors";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import Plot from "react-plotly.js";
-
-// Choropleth map data (you can replace this with your own dataset)
-const globalData: any = {
-  type: "choropleth",
-  locationmode: "country names",
-  locations: ["United States", "Canada", "Mexico", "Brazil", "Argentina"],
-  z: [10, 20, 30, 40, 50], // Data for coloring the countries
-  colorscale: "Viridis", // You can change the colorscale
-  colorbar: {
-    title: "Value", // Title of the color scale bar
-  },
-};
 
 const globalLayout = {
   geo: {
@@ -28,23 +17,6 @@ const globalLayout = {
   },
   title: "Global Visitors", // Title of the map
   displayModeBar: false,
-};
-
-const natlData: any = {
-  type: "choropleth", // Use choroplethmapbox for detailed maps
-  locations: ["CA", "TX", "FL" /* Add more state abbreviations */], // State abbreviations
-  z: [39.51, 29.14, 21.48 /* Add more values */], // Corresponding values
-  locationmode: "USA-states", // Specify state-level visualization
-  colorscale: "Viridis",
-  colorbar: {
-    title: "Number of visitors",
-  },
-  marker: {
-    line: {
-      color: "rgb(255, 255, 255)",
-      width: 1,
-    },
-  },
 };
 
 const natlLayout = {
@@ -71,9 +43,44 @@ const natlLayout = {
 
 export default function VisitorMap() {
   const [viewGlobalMap, setViewGlobalMap] = useState<boolean>(false);
+  const USMapData = useGetUSMapData();
+  const globalMapData = useGetGlobalMapData();
+
+  const natlData: any = {
+    type: "choropleth", // Use choroplethmapbox for detailed maps
+    locations: USMapData.locations,
+    z: USMapData.z,
+    locationmode: "USA-states", // Specify state-level visualization
+    colorscale: "Blues",
+    colorbar: {
+      title: "Visitors",
+      tickformat: ".0f", // Display only integers (no decimals)
+    },
+    marker: {
+      line: {
+        color: "rgb(255, 255, 255)",
+        width: 1,
+      },
+    },
+  };
+
+  const globalData: any = {
+    type: "choropleth",
+    locationmode: "country names",
+    locations: globalMapData.locations,
+    z: globalMapData.z, // Data for coloring the countries
+    colorscale: "Blues", // You can change the colorscale
+    colorbar: {
+      title: "Visitors", // Title of the color scale bar
+      tickformat: ".0f", // Display only integers (no decimals)
+    },
+  };
+
   return (
     <>
-      <Button onClick={() => setViewGlobalMap(!viewGlobalMap)}>Swap</Button>
+      <Button onClick={() => setViewGlobalMap(!viewGlobalMap)}>
+        Show {viewGlobalMap ? "US" : "Global"}
+      </Button>
       <Plot
         className="w-full h-[75vh]"
         data={viewGlobalMap ? [globalData] : [natlData]}

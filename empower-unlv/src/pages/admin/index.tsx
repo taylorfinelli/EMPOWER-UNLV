@@ -1,42 +1,40 @@
-import { useEffect, useState } from "react";
-import { validateToken } from "./utils";
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { signIn } from "@/auth/auth-service";
+import { useNavigate } from "react-router-dom";
+import verifyToken from "@/auth/verify-token";
 
 export default function AdminLogin() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    validateToken();
-  }, []);
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(""); // Clear previous error
 
-    try {
-      const response = await fetch("http://localhost:3000/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-      });
+    const { auth: session, error } = await signIn(username, password);
 
-      if (!response.ok) {
-        throw new Error("Login failed. Please check your credentials.");
+    setUsername("");
+    setPassword("");
+
+    if (error) {
+      setLoginError(error);
+      return;
+    }
+
+    if (session && session.AccessToken) {
+      sessionStorage.setItem("accessToken", session.AccessToken);
+      const validToken = await verifyToken();
+
+      if (validToken) {
+        navigate("/admin");
+      } else {
+        console.error("Session token was not set properly.");
       }
-
-      const data = await response.json();
-      localStorage.setItem("token", data.token); // Store the JWT token
-      // Redirect or update state to show logged-in user
-      window.location.href = "/admin";
-    } catch (error: any) {
-      setError(error.message);
     }
   };
 
@@ -45,7 +43,7 @@ export default function AdminLogin() {
       <Card>
         <CardHeader>Login</CardHeader>
         <CardContent>
-          <form className="flex flex-col gap-y-2 w-72" onSubmit={handleSubmit}>
+          <form className="flex flex-col gap-y-2 w-72" onSubmit={handleSignIn}>
             <Input
               type="text"
               placeholder="Username"
@@ -61,7 +59,7 @@ export default function AdminLogin() {
               required
             />
             <Button type="submit">Login</Button>
-            {error && <Label style={{ color: "red" }}>{error}</Label>}
+            {loginError && <Label style={{ color: "red" }}>{loginError}</Label>}
           </form>
         </CardContent>
       </Card>
